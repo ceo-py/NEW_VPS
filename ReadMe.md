@@ -10,7 +10,6 @@
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
 - [Detailed Setup](#detailed-setup)
   - [Initial Server Setup](#1-initial-server-setup)
   - [SSH Security Hardening](#2-ssh-security-hardening)
@@ -32,17 +31,6 @@ Before starting, ensure you have:
 - [ ] Local machine with SSH client
 - [ ] Cloudflare account (free tier works)
 - [ ] Domain name managed by Cloudflare
-
-## Quick Start
-
-For experienced users, run the automated setup:
-
-```bash
-# Download and run the setup script
-curl -sSL https://raw.githubusercontent.com/your-repo/vps-setup/main/setup.sh | bash
-```
-
-For manual setup, follow the [Detailed Setup](#detailed-setup) section below.
 
 ## Detailed Setup
 
