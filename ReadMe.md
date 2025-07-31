@@ -186,49 +186,14 @@ sudo systemctl enable fail2ban
 #### 4.2 Configure Fail2Ban
 
 ```bash
-sudo tee /etc/fail2ban/jail.local > /dev/null << 'EOF'
-[DEFAULT]
-bantime = 3600
-findtime = 600
-maxretry = 3
-backend = systemd
+# Download and apply Fail2Ban configuration
+sudo wget -O /etc/fail2ban/jail.local https://raw.githubusercontent.com/ceo-py/NEW_VPS/refs/heads/main/jail.local
 
-[sshd]
-enabled = true
-port = ssh
-filter = sshd
-logpath = /var/log/auth.log
-maxretry = 3
-bantime = 3600
-
-[nginx-http-auth]
-enabled = true
-filter = nginx-http-auth
-port = http,https
-logpath = /var/log/nginx/error.log
-
-[nginx-noscript]
-enabled = true
-port = http,https
-filter = nginx-noscript
-logpath = /var/log/nginx/access.log
-maxretry = 6
-
-[nginx-badbots]
-enabled = true
-port = http,https
-filter = nginx-badbots
-logpath = /var/log/nginx/access.log
-maxretry = 2
-
-[nginx-noproxy]
-enabled = true
-port = http,https
-filter = nginx-noproxy
-logpath = /var/log/nginx/access.log
-maxretry = 2
-EOF
+# Or manually copy the configuration from the repository
+sudo cp jail.local /etc/fail2ban/jail.local
 ```
+
+> 📁 **Configuration File**: [`jail.local`](./jail.local) - Complete Fail2Ban configuration with multiple protection rules
 
 #### 4.3 Test and Restart Fail2Ban
 
@@ -270,23 +235,17 @@ cloudflared tunnel create my-tunnel
 # Create configuration directory
 mkdir -p ~/.cloudflared
 
-# Create tunnel configuration
-cat > ~/.cloudflared/config.yml << 'EOF'
-tunnel: YOUR_TUNNEL_ID_HERE
-credentials-file: /home/username/.cloudflared/YOUR_TUNNEL_ID_HERE.json
+# Download and apply Cloudflare tunnel configuration
+wget -O ~/.cloudflared/config.yml https://raw.githubusercontent.com/ceo-py/NEW_VPS/refs/heads/main/config.yml
 
-ingress:
-  - hostname: yourdomain.com
-    service: http://localhost:80
-  - hostname: www.yourdomain.com
-    service: http://localhost:80
-  - hostname: api.yourdomain.com
-    service: http://localhost:3000
-  - hostname: admin.yourdomain.com
-    service: http://localhost:8080
-  - service: http_status:404
-EOF
+# Or manually copy the configuration from the repository
+cp config.yml ~/.cloudflared/config.yml
+
+# Edit the configuration with your tunnel ID and credentials path
+nano ~/.cloudflared/config.yml
 ```
+
+> 📁 **Configuration File**: [`config.yml`](./config.yml) - Cloudflare tunnel configuration template
 
 #### 5.4 Setup DNS and Service
 
@@ -307,75 +266,16 @@ sudo systemctl status cloudflared
 ### 6. Monitoring Setup
 
 ```bash
-# Create monitoring script
-sudo tee /usr/local/bin/vps-monitor.sh > /dev/null << 'EOF'
-#!/bin/bash
+# Download and apply VPS monitor script
+sudo wget -O /usr/local/bin/vps-monitor.sh https://raw.githubusercontent.com/ceo-py/NEW_VPS/refs/heads/main/vps-monitor.sh
 
-# VPS Monitoring Script
-# Usage: ./vps-monitor.sh
+# Or manually copy the script from the repository
+sudo cp vps-monitor.sh /usr/local/bin/vps-monitor.sh
+```
 
-echo "🔍 VPS Security & Performance Monitor"
-echo "======================================"
-echo
+> 📁 **Script File**: [`vps-monitor.sh`](./vps-monitor.sh) - Complete VPS monitor script
 
-# System Information
-echo "📊 System Information:"
-echo "Hostname: $(hostname)"
-echo "Uptime: $(uptime -p)"
-echo "Load Average: $(uptime | awk -F'load average:' '{print $2}')"
-echo
-
-# Memory Usage
-echo "💾 Memory Usage:"
-free -h
-echo
-
-# Disk Usage
-echo "💿 Disk Usage:"
-df -h / | tail -1
-echo
-
-# SSH Security Status
-echo "🔐 SSH Security Status:"
-echo "SSH Service: $(systemctl is-active ssh)"
-echo "Root Login: $(grep '^PermitRootLogin' /etc/ssh/sshd_config | awk '{print $2}')"
-echo "Password Auth: $(grep '^PasswordAuthentication' /etc/ssh/sshd_config | awk '{print $2}')"
-echo
-
-# Firewall Status
-echo "🔥 Firewall Status:"
-sudo ufw status | head -5
-echo
-
-# Fail2Ban Status
-echo "🛡️ Fail2Ban Status:"
-echo "Service: $(systemctl is-active fail2ban)"
-if systemctl is-active fail2ban >/dev/null 2>&1; then
-    echo "Active Jails:"
-    sudo fail2ban-client status | grep "Jail list" | sed 's/.*Jail list://'
-    echo "Banned IPs:"
-    sudo fail2ban-client status sshd 2>/dev/null | grep "Banned IP list" | sed 's/.*Banned IP list://' || echo "None"
-fi
-echo
-
-# Cloudflare Tunnel Status
-echo "☁️ Cloudflare Tunnel Status:"
-echo "Service: $(systemctl is-active cloudflared 2>/dev/null || echo 'Not installed')"
-echo
-
-# Recent Failed Login Attempts
-echo "🚨 Recent Failed Login Attempts (Last 10):"
-grep "Failed password" /var/log/auth.log 2>/dev/null | tail -10 | awk '{print $1, $2, $3, $11, $13}' || echo "No recent failed attempts"
-echo
-
-# Network Connections
-echo "🌐 Active Network Connections:"
-ss -tuln | grep LISTEN
-echo
-
-echo "✅ Monitoring complete!"
-EOF
-
+```bash
 # Make script executable
 sudo chmod +x /usr/local/bin/vps-monitor.sh
 ```
