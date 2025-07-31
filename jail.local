@@ -1,0 +1,186 @@
+[DEFAULT]
+# IPs to never ban (REPLACE YOUR_PUBLIC_IP_HERE with your actual IP!)
+ignoreip = 127.0.0.1/8 ::1 YOUR_PUBLIC_IP_HERE
+
+# Ban duration (1 hour = 3600 seconds, 24 hours = 86400)
+bantime = 3600
+
+# Time window to count failures (10 minutes)
+findtime = 600
+
+# Number of failures before ban
+maxretry = 3
+
+# Email notifications (optional - configure your email)
+# destemail = your-email@example.com
+# sendername = Fail2Ban-VPS
+# mta = sendmail
+
+# Default action
+action = %(action_)s
+
+# ============================================================================
+# SSH PROTECTION
+# ============================================================================
+[sshd]
+enabled = true
+port = ssh
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 3600
+filter = sshd
+
+[sshd-ddos]
+enabled = true
+port = ssh
+logpath = /var/log/auth.log
+maxretry = 6
+findtime = 120
+bantime = 1200
+filter = sshd-ddos
+
+# ============================================================================
+# APACHE2 PROTECTION
+# ============================================================================
+[apache-auth]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/error.log
+maxretry = 3
+bantime = 3600
+
+[apache-badbots]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/access.log
+maxretry = 2
+bantime = 86400
+
+[apache-noscript]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/access.log
+maxretry = 2
+bantime = 3600
+
+[apache-overflows]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/access.log
+maxretry = 2
+bantime = 3600
+
+[apache-nohome]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/access.log
+maxretry = 2
+bantime = 3600
+
+[apache-botsearch]
+enabled = true
+port = http,https
+logpath = /var/log/apache2/access.log
+maxretry = 2
+bantime = 86400
+
+# ============================================================================
+# NGINX PROTECTION
+# ============================================================================
+[nginx-http-auth]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/error.log
+maxretry = 3
+bantime = 3600
+filter = nginx-http-auth
+
+[nginx-badbots]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 86400
+filter = nginx-badbots
+
+[nginx-noscript]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 3600
+filter = nginx-noscript
+
+[nginx-noproxy]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 3600
+filter = nginx-noproxy
+
+[nginx-nohome]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 3600
+filter = nginx-nohome
+
+[nginx-botsearch]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 86400
+filter = nginx-botsearch
+
+[nginx-404]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 20
+findtime = 120
+bantime = 1800
+filter = nginx-404
+
+[nginx-req-limit]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/error.log
+maxretry = 10
+findtime = 60
+bantime = 7200
+filter = nginx-req-limit
+
+# ============================================================================
+# COMBINED PROTECTION
+# ============================================================================
+[http-get-dos]
+enabled = false
+port = http,https
+logpath = /var/log/nginx/access.log
+         /var/log/apache2/access.log
+maxretry = 300
+findtime = 300
+bantime = 600
+filter = http-get-dos
+
+[wordpress]
+enabled = false
+port = http,https
+logpath = /var/log/nginx/access.log
+         /var/log/apache2/access.log
+maxretry = 3
+bantime = 86400
+filter = wordpress
+
+[phpmyadmin]
+enabled = false
+port = http,https
+logpath = /var/log/nginx/error.log
+         /var/log/apache2/error.log
+maxretry = 3
+bantime = 86400
+filter = phpmyadmin-syslog
+EOF
