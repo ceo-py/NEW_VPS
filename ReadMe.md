@@ -49,12 +49,12 @@
 `groups username`
 
 # Step 5: Setup SSH directory for new user
-`su - username`
-`mkdir -p ~/.ssh`
-`chmod 700 ~/.ssh`
-`touch ~/.ssh/authorized_keys`
-`chmod 600 ~/.ssh/authorized_keys`
-`exit`
+`su - username
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+exit`
 
 # Step 6: Copy SSH key (Run on LOCAL machine)
 `ssh-copy-id username@YOUR_SERVER_IP`
@@ -72,11 +72,11 @@
 # Step 9: Configure SSH security
 `sudo tee /etc/ssh/sshd_config > /dev/null << 'EOF'`
 # SSH Security Configuration
-`Port 22`
-`Protocol 2`
-`HostKey /etc/ssh/ssh_host_rsa_key`
-`HostKey /etc/ssh/ssh_host_ecdsa_key`
-`HostKey /etc/ssh/ssh_host_ed25519_key`
+`Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key`
 
 # Authentication
 LoginGraceTime 60
@@ -110,51 +110,51 @@ AllowUsers username
 EOF
 
 # Step 10: Test and reload SSH
-`sudo sshd -t`
-`sudo systemctl reload ssh`
-`sudo systemctl status ssh`
+`sudo sshd -t
+sudo systemctl reload ssh
+sudo systemctl status ssh`
 
 # ============================================================================
 # 🔥 FIREWALL CONFIGURATION
 # ============================================================================
 
 # Step 11: Configure UFW firewall
-`sudo ufw allow OpenSSH`
-`sudo ufw allow 80/tcp`
-`sudo ufw allow 443/tcp`
-`sudo ufw default deny incoming`
-`sudo ufw default allow outgoing`
-`sudo ufw show added`
-`sudo ufw --force enable`
-`sudo ufw status verbose`
+`sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw show added
+sudo ufw --force enable
+sudo ufw status verbose`
 
 # ============================================================================
 # 🛡️ FAIL2BAN INSTALLATION & CONFIGURATION
 # ============================================================================
 
 # Step 12: Install Fail2Ban
-`sudo apt update && sudo apt install fail2ban -y`
-`sudo systemctl start fail2ban`
-`sudo systemctl enable fail2ban`
+`sudo apt update && sudo apt install fail2ban -y
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban`
 
 # Step 13: Create comprehensive Fail2Ban configuration
 `sudo tee /etc/fail2ban/jail.local > /dev/null << 'EOF'`
 # Copy the content from the jail.local file in this repository
 
 # Step 14: Test and restart Fail2Ban
-`sudo fail2ban-client -t`
-`sudo systemctl restart fail2ban`
-`sudo fail2ban-client status`
+`sudo fail2ban-client -t
+sudo systemctl restart fail2ban
+sudo fail2ban-client status`
 
 # ============================================================================
 # ☁️ CLOUDFLARE TUNNEL SETUP
 # ============================================================================
 
 # Step 15: Install Cloudflared
-`wget -O cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb`
-`sudo dpkg -i cloudflared.deb`
-`cloudflared --version`
-`rm cloudflared.deb`
+`wget -O cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+cloudflared --version
+rm cloudflared.deb`
 
 # Step 16: Login to Cloudflare (this will open browser)
 `cloudflared tunnel login`
@@ -164,26 +164,26 @@ EOF
 # Note the tunnel ID displayed
 
 # Step 18: Create tunnel configuration
-`mkdir -p ~/.cloudflared`
-`cat > ~/.cloudflared/config.yml << 'EOF'`
+`mkdir -p ~/.cloudflared
+cat > ~/.cloudflared/config.yml << 'EOF'`
 # Copy the content from the config.yml file in this repository
 
 # Cloudflare Tunnel Configuration
-`tunnel: YOUR_TUNNEL_ID_HERE`
-`credentials-file: /home/username/.cloudflared/YOUR_TUNNEL_ID_HERE.json`
+`tunnel: YOUR_TUNNEL_ID_HERE
+credentials-file: /home/username/.cloudflared/YOUR_TUNNEL_ID_HERE.json`
 
 
 # Step 19: Create DNS records
-`cloudflared tunnel route dns my-tunnel yourdomain.com`
-`cloudflared tunnel route dns my-tunnel www.yourdomain.com`
-`cloudflared tunnel route dns my-tunnel api.yourdomain.com`
-`cloudflared tunnel route dns my-tunnel admin.yourdomain.com`
+`cloudflared tunnel route dns my-tunnel yourdomain.com
+cloudflared tunnel route dns my-tunnel www.yourdomain.com
+cloudflared tunnel route dns my-tunnel api.yourdomain.com
+cloudflared tunnel route dns my-tunnel admin.yourdomain.com`
 
 # Step 20: Install tunnel as service
-`sudo cloudflared service install`
-`sudo systemctl start cloudflared`
-`sudo systemctl enable cloudflared`
-`sudo systemctl status cloudflared`
+`sudo cloudflared service install
+sudo systemctl start cloudflared
+sudo systemctl enable cloudflared
+sudo systemctl status cloudflared`
 
 # ============================================================================
 # 📊 MONITORING SCRIPT SETUP
@@ -238,14 +238,14 @@ EOF
 `sudo fail2ban-client set sshd unbanip 1.2.3.4`
 
 # View real-time logs
-`sudo tail -f /var/log/auth.log`          # SSH attempts
-`sudo tail -f /var/log/fail2ban.log`      # Fail2Ban activity
-`sudo journalctl -u cloudflared -f`       # Cloudflare tunnel logs
+`sudo tail -f /var/log/auth.log          # SSH attempts
+sudo tail -f /var/log/fail2ban.log      # Fail2Ban activity
+sudo journalctl -u cloudflared -f`       # Cloudflare tunnel logs
 
 # Restart services
-`sudo systemctl restart fail2ban`
-`sudo systemctl restart cloudflared`
-`sudo systemctl restart ssh`
+`sudo systemctl restart fail2ban
+sudo systemctl restart cloudflared
+sudo systemctl restart ssh`
 
 # ============================================================================
 # 🚨 EMERGENCY COMMANDS (Use only if locked out)
@@ -280,23 +280,23 @@ After setup, use these commands for daily management:
 `sudo ufw status`
 
 # View recent attacks
-`sudo tail -f /var/log/fail2ban.log`
-`sudo grep "Failed password" /var/log/auth.log | tail -10`
+`sudo tail -f /var/log/fail2ban.log
+sudo grep "Failed password" /var/log/auth.log | tail -10`
 
 # Update system
 `sudo apt update && sudo apt upgrade -y`
 
 # Restart services if needed
-`sudo systemctl restart fail2ban`
-`sudo systemctl restart cloudflared`
+`sudo systemctl restart fail2ban
+sudo systemctl restart cloudflared`
 
 
 🆘 Emergency Recovery
 If you get locked out, use VPS console access:
 
 # Reset SSH to allow password temporarily
-`sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config`
-`sudo systemctl restart ssh`
+`sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo systemctl restart ssh`
 
 # Disable firewall temporarily
 `sudo ufw disable`
