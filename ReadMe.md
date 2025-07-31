@@ -370,21 +370,6 @@ sudo systemctl stop fail2ban
 | Locked out by Fail2Ban | Use console to unban IP: `sudo fail2ban-client set sshd unbanip YOUR_IP` |
 | Cloudflare tunnel not working | Check logs: `sudo journalctl -u cloudflared -f` |
 | High memory usage | Check processes: `top` or `htop` |
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Commit your changes (`git commit -am 'Add improvement'`)
-4. Push to the branch (`git push origin feature/improvement`)
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ---
 
 **⚠️ Security Notice**: Always test configurations in a development environment before applying to production servers. Keep your system updated and monitor logs regularly.
-
-**📞 Support**: For issues or questions, please open an issue in the repository or contact the maintainers.
