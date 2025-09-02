@@ -17,6 +17,7 @@
   - [Fail2Ban Installation](#4-fail2ban-installation)
   - [Cloudflare Tunnel Setup](#5-cloudflare-tunnel-setup)
   - [Monitoring Setup](#6-monitoring-setup)
+  - [Automatic Updates Setup](#7-automatic-updates-setup-ubuntu)
 - [Verification](#verification)
 - [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
@@ -268,6 +269,114 @@ sudo cp vps-monitor.sh /usr/local/bin/vps-monitor.sh
 sudo chmod +x /usr/local/bin/vps-monitor.sh
 ```
 
+### 7. Automatic Updates Setup (Ubuntu)
+
+#### 7.1 Install and Configure Unattended Upgrades
+
+```bash
+# Install unattended-upgrades package
+sudo apt update
+sudo apt install unattended-upgrades -y
+
+# Configure unattended upgrades (select "Yes" when prompted)
+sudo dpkg-reconfigure unattended-upgrades
+```
+
+#### 7.2 Configure Auto-Reboot Settings
+
+```bash
+# Edit unattended upgrades configuration
+sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
+```
+
+Add these lines to enable automatic reboots when required:
+
+```bash
+# Automatic reboot configuration
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "false";
+
+# Email notifications (optional)
+Unattended-Upgrade::Mail "your-email@example.com";
+Unattended-Upgrade::MailOnlyOnError "true";
+
+# Keep old kernel versions for rollback
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "false";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "false";
+
+# Skip updates that require interaction
+Unattended-Upgrade::Skip-Updates-On-Metered-Connections "true";
+```
+
+#### 7.3 Configure Update Frequency
+
+```bash
+# Edit apt periodic configuration
+sudo nano /etc/apt/apt.conf.d/20auto-upgrades
+```
+
+Ensure these settings are configured:
+
+```bash
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Unattended-Upgrade "1";
+```
+
+#### 7.4 Verify Automatic Updates
+
+```bash
+# Check unattended-upgrades service status
+sudo systemctl status unattended-upgrades
+
+# Test the configuration
+sudo unattended-upgrades --dry-run --debug
+
+# View automatic update logs
+sudo tail -f /var/log/unattended-upgrades/unattended-upgrades.log
+
+# Check when updates were last run
+sudo cat /var/log/unattended-upgrades/unattended-upgrades-dpkg.log | tail -20
+```
+
+#### 7.5 Manual Control Commands
+
+```bash
+# Force run unattended upgrades now
+sudo unattended-upgrades --debug
+
+# Check what updates are available
+sudo apt list --upgradable
+
+# View update history
+sudo grep "upgrade" /var/log/dpkg.log | tail -10
+
+# Disable automatic updates temporarily
+sudo systemctl stop unattended-upgrades
+sudo systemctl disable unattended-upgrades
+
+# Re-enable automatic updates
+sudo systemctl enable unattended-upgrades
+sudo systemctl start unattended-upgrades
+```
+
+> **📋 What This Setup Does:**
+> - Automatically installs security updates daily
+> - Downloads and installs package updates
+> - Reboots server at 2:00 AM if kernel updates require it
+> - Sends email notifications on errors (if configured)
+> - Keeps your system current without manual intervention
+> - Maintains system security with minimal maintenance
+
+> **⚠️ Important Notes:**
+> - The system will automatically reboot at 2:00 AM if kernel updates require it
+> - Monitor `/var/log/unattended-upgrades/` logs regularly
+> - Test in development environment before enabling auto-reboot in production
+> - Consider setting up email notifications for update failures
+
 ## Verification
 
 Run these commands to verify your setup:
@@ -285,6 +394,9 @@ sudo fail2ban-client status
 # Check Cloudflare tunnel
 sudo systemctl status cloudflared
 
+# Verify automatic updates
+sudo systemctl status unattended-upgrades
+
 # Run monitoring script
 sudo /usr/local/bin/vps-monitor.sh
 ```
@@ -297,12 +409,16 @@ sudo /usr/local/bin/vps-monitor.sh
 # Health check
 sudo /usr/local/bin/vps-monitor.sh
 
-# Update system
+# Update system (manual - automatic updates handle this)
 sudo apt update && sudo apt upgrade -y
 
 # Check security logs
 sudo tail -f /var/log/fail2ban.log
 sudo grep "Failed password" /var/log/auth.log | tail -10
+
+# Check automatic updates status
+sudo systemctl status unattended-upgrades
+sudo tail -f /var/log/unattended-upgrades/unattended-upgrades.log
 ```
 
 ### Fail2Ban Management
