@@ -1,9 +1,9 @@
 # VPS Security Hardening & Setup Guide
 
-[![Security](https://img.shields.io/badge/Security-Hardened-green?style=flat-square)](https://github.com)
-[![Fail2Ban](https://img.shields.io/badge/Fail2Ban-Configured-blue?style=flat-square)](https://github.com)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-orange?style=flat-square)](https://github.com)
-[![SSH](https://img.shields.io/badge/SSH-Key_Auth-red?style=flat-square)](https://github.com)
+[![Security](https://img.shields.io/badge/Security-Hardened-green?style=flat-square)](#3-firewall-configuration)
+[![Fail2Ban](https://img.shields.io/badge/Fail2Ban-Configured-blue?style=flat-square)](#4-fail2ban-installation)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-orange?style=flat-square)](#5-cloudflare-tunnel-setup)
+[![SSH](https://img.shields.io/badge/SSH-Key_Auth-red?style=flat-square)](#2-ssh-security-hardening)
 
 > A comprehensive guide for securing and configuring a production VPS with industry best practices.
 
@@ -30,6 +30,8 @@ Before starting, ensure you have:
 - [ ] Fresh VPS with Ubuntu 20.04+ or Debian 11+
 - [ ] Root access to the server
 - [ ] Local machine with SSH client
+
+Optional
 - [ ] Cloudflare account (free tier works)
 - [ ] Domain name managed by Cloudflare
 
